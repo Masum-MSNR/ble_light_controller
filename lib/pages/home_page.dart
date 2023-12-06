@@ -26,7 +26,7 @@ class _HomePageState extends State<HomePage> {
                 return Column(
                   children: [
                     Text(
-                      'Searching for BT05',
+                      'Searching for ${_controller.deviceName}',
                       style: TextStyle(fontSize: 20),
                     ),
                     SizedBox(height: 20),
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                 return Column(
                   children: [
                     Text(
-                      'Connecting to BT05',
+                      'Connecting to ${_controller.deviceName}',
                       style: TextStyle(fontSize: 20),
                     ),
                     SizedBox(height: 20),
@@ -63,7 +63,9 @@ class _HomePageState extends State<HomePage> {
                   }
                 } else {
                   return TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _controller.startScan();
+                    },
                     child: Text('Retry'),
                   );
                 }
