@@ -49,14 +49,14 @@ class _HomePageState extends State<HomePage> {
                   if (_controller.isOn.value) {
                     return InkWell(
                       onTap: () {
-                        _controller.write('0');
+                        _controller.write('off\n');
                       },
                       child: Image.asset('assets/images/light_on.png'),
                     );
                   } else {
                     return InkWell(
                       onTap: () {
-                        _controller.write('1');
+                        _controller.write('on\n');
                       },
                       child: Image.asset('assets/images/light_off.png'),
                     );
@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _controller.delete();
     Get.delete<HomePageController>();
     super.dispose();
   }

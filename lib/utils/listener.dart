@@ -14,7 +14,7 @@ class Listener {
     subscription = characteristic.lastValueStream.listen((event) {
       var res = utf8.decode(event);
       debugPrint('response $res');
-      if (res == '49' || res == '48') {
+      if (res == 'on' || res == 'off') {
         deviceController.initiateCommunication(characteristic);
         cancel();
       }

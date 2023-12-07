@@ -13,12 +13,14 @@ class HomePageController extends GetxController {
   BluetoothDevice? currentDevice;
   BluetoothCharacteristic? comCharacteristic;
   StreamSubscription<List<int>>? comSubscription;
+  StreamSubscription<bool>? scanSubscription;
+  StreamSubscription<List<ScanResult>>? resultSubscription;
 
   var isConnected = false.obs;
   var isConnecting = false.obs;
   var isScanning = true.obs;
   var isOn = false.obs;
-  var deviceName = 'microBio';
+  var deviceName = 'HMSoft';
 
   @override
   void onInit() {
@@ -28,11 +30,13 @@ class HomePageController extends GetxController {
   }
 
   listen() {
-    FlutterBluePlus.isScanning.listen((event) {
+    scanSubscription = FlutterBluePlus.isScanning.listen((event) {
       isScanning.value = event;
-      if (!event && !isConnected.value) startScan();
+      if (!event && !isConnected.value && !isConnecting.value) {
+        startScan();
+      }
     });
-    FlutterBluePlus.scanResults.listen((event) async {
+    resultSubscription = FlutterBluePlus.scanResults.listen((event) async {
       for (var i in event) {
         debugPrint(i.device.platformName);
         if (i.device.platformName == deviceName) {
@@ -53,7 +57,7 @@ class HomePageController extends GetxController {
                 l.Listener(characteristic, this);
                 try {
                   await characteristic.write(
-                    utf8.encode('2'),
+                    utf8.encode('on\n'),
                     withoutResponse:
                         characteristic.properties.writeWithoutResponse,
                   );
@@ -91,14 +95,15 @@ class HomePageController extends GetxController {
     if (comSubscription != null) comSubscription!.cancel();
     comSubscription = comCharacteristic!.lastValueStream.listen((event) {
       var response = utf8.decode(event);
-      if (response == '49') {
+      if (response == 'on') {
         isOn.value = true;
-      } else if (response == '48') {
+      } else if (response == 'off') {
         isOn.value = false;
+      } else if (response == '?') {
+        write('-\n');
       }
       debugPrint(response);
     });
-    write('1');
 
     currentDevice?.connectionState.listen((event) {
       if (event == BluetoothConnectionState.disconnected) {
@@ -143,7 +148,7 @@ class HomePageController extends GetxController {
               l.Listener(characteristic, this);
               try {
                 await characteristic.write(
-                  utf8.encode('2'),
+                  utf8.encode('on\n'),
                   withoutResponse:
                       characteristic.properties.writeWithoutResponse,
                 );
@@ -158,9 +163,12 @@ class HomePageController extends GetxController {
     if (currentDevice == null) startScan();
   }
 
-  @override
-  void onClose() {
+  delete() {
     comSubscription?.cancel();
-    super.onClose();
+    comSubscription = null;
+    resultSubscription?.cancel();
+    resultSubscription = null;
+    scanSubscription?.cancel();
+    scanSubscription = null;
   }
 }
