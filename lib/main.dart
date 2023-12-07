@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:ble_light_controller/pages/bluetooth_off_page.dart';
 import 'package:ble_light_controller/pages/home_page.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
@@ -37,7 +39,17 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: StreamBuilder<BluetoothAdapterState>(
+        stream: FlutterBluePlus.adapterState,
+        initialData: BluetoothAdapterState.unknown,
+        builder: (c, snapshot) {
+          final state = snapshot.requireData;
+          if (state == BluetoothAdapterState.on) {
+            return const HomePage();
+          }
+          return BluetoothOffPage(state: state);
+        },
+      ),
     );
   }
 }

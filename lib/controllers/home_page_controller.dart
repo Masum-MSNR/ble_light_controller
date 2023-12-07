@@ -18,7 +18,7 @@ class HomePageController extends GetxController {
   var isConnecting = false.obs;
   var isScanning = true.obs;
   var isOn = false.obs;
-  var deviceName = 'HMSoft';
+  var deviceName = 'microBio';
 
   @override
   void onInit() {
@@ -30,6 +30,7 @@ class HomePageController extends GetxController {
   listen() {
     FlutterBluePlus.isScanning.listen((event) {
       isScanning.value = event;
+      if (!event && !isConnected.value) startScan();
     });
     FlutterBluePlus.scanResults.listen((event) async {
       for (var i in event) {
@@ -46,9 +47,9 @@ class HomePageController extends GetxController {
               var characteristics = service.characteristics;
               for (var characteristic in characteristics) {
                 debugPrint(characteristic.uuid.str);
-                await Future.delayed(const Duration(seconds: 5));
+                await Future.delayed(const Duration(milliseconds: 500));
                 characteristic.setNotifyValue(true);
-                await Future.delayed(const Duration(seconds: 5));
+                await Future.delayed(const Duration(milliseconds: 500));
                 l.Listener(characteristic, this);
                 try {
                   await characteristic.write(
@@ -98,6 +99,19 @@ class HomePageController extends GetxController {
       debugPrint(response);
     });
     write('1');
+
+    currentDevice?.connectionState.listen((event) {
+      if (event == BluetoothConnectionState.disconnected) {
+        isConnected.value = false;
+        isConnecting.value = false;
+        isScanning.value = true;
+        isOn.value = false;
+        currentDevice = null;
+        comCharacteristic = null;
+        comSubscription = null;
+        startScan();
+      }
+    });
   }
 
   write(String data) async {
@@ -123,9 +137,9 @@ class HomePageController extends GetxController {
             var characteristics = service.characteristics;
             for (var characteristic in characteristics) {
               debugPrint(characteristic.uuid.str);
-              await Future.delayed(const Duration(seconds: 5));
+              await Future.delayed(const Duration(milliseconds: 500));
               characteristic.setNotifyValue(true);
-              await Future.delayed(const Duration(seconds: 5));
+              await Future.delayed(const Duration(milliseconds: 500));
               l.Listener(characteristic, this);
               try {
                 await characteristic.write(
@@ -142,5 +156,11 @@ class HomePageController extends GetxController {
       }
     }
     if (currentDevice == null) startScan();
+  }
+
+  @override
+  void onClose() {
+    comSubscription?.cancel();
+    super.onClose();
   }
 }

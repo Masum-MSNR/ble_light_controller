@@ -76,4 +76,10 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    Get.delete<HomePageController>();
+    super.dispose();
+  }
 }
