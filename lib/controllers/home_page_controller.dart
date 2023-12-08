@@ -20,7 +20,8 @@ class HomePageController extends GetxController {
   var isConnecting = false.obs;
   var isScanning = true.obs;
   var isOn = false.obs;
-  var deviceName = 'HMSoft';
+  // var deviceName = 'HMSoft';
+  var deviceName = 'microBio';
 
   @override
   void onInit() {

@@ -32,7 +32,7 @@ class BluetoothOffPage extends StatelessWidget {
               onPressed: () {
                 FlutterBluePlus.turnOn();
               },
-              child: Text('Turn On Bluetooth'),
+              child: const Text('Turn On Bluetooth'),
             ),
           ],
         ),

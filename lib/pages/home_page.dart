@@ -27,9 +27,9 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Text(
                       'Searching for ${_controller.deviceName}',
-                      style: TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     const CircularProgressIndicator(),
                   ],
                 );
@@ -38,9 +38,9 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Text(
                       'Connecting to ${_controller.deviceName}',
-                      style: TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     const CircularProgressIndicator(),
                   ],
                 );
@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       _controller.startScan();
                     },
-                    child: Text('Retry'),
+                    child: const Text('Retry'),
                   );
                 }
               }
